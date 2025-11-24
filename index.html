@@ -549,7 +549,7 @@
             <span class="badge">團隊五階段互動遊戲</span>
           </h1>
           <p class="subtitle">
-            每個階段都有 2～3 個小情境，請依直覺選擇：看看你的選擇會如何影響
+            每個階段都有兩個小關卡，請依直覺選擇：看看你的選擇會如何影響
             <span class="text-accent">團隊氣氛值</span> 與
             <span class="text-accent">目標達成度</span>，體驗從
             組建期 → 風暴期 → 正軌期 → 風采期 → 解散期 的完整歷程。
@@ -614,7 +614,7 @@
   </div>
 
   <script>
-    // ----- 遊戲資料設定（每階段多個互動，風暴期 3 個） -----
+    // ----- 每個階段 2 個小關卡 -----
     const stages = [
       {
         id: 1,
@@ -623,10 +623,10 @@
         stageTag: "Stage 1 · Forming",
         interactions: [
           {
-            title: "我們是誰？第一次線上開會",
+            title: "第一次線上開會：超安靜的畫面",
             scenario:
               "你們被湊成一組，要在 8 週內完成系上的專案發表。第一次線上會議大家都有上線、也開了鏡頭，但畫面很安靜，沒人知道要先做什麼。",
-            hint: "組建期的重點是建立安全感、互相認識，並釐清目標與基本規則。",
+            hint: "組建期的重點是建立安全感與基本默契。",
             options: [
               {
                 key: "A",
@@ -642,7 +642,7 @@
                 moodDelta: 1,
                 goalDelta: 2,
                 feedback:
-                  "你很專注在任務和效率，但忽略了成員還不熟、也不知道彼此的期待。短期看起來很有效率，後面比較容易出現誤解與不滿，風暴期可能會更痛。",
+                  "你很專注在任務和效率，但忽略了成員還不熟、也不知道彼此的期待。短期看起來有效率，後面比較容易出現誤解與不滿。",
               },
               {
                 key: "C",
@@ -650,15 +650,15 @@
                 moodDelta: 2,
                 goalDelta: 0,
                 feedback:
-                  "氣氛可能會不錯，但如果完全沒提專案目標與接下來怎麼做，大家會開始不確定自己要負責什麼，後面容易出現「我以為你會做」的狀況。",
+                  "氣氛可能會不錯，但如果完全沒提專案目標與接下來怎麼做，大家會開始不確定自己要負責什麼，後面容易出現「我以為你會做」。",
               },
             ],
           },
           {
-            title: "目標怎麼講清楚？",
+            title: "目標共識：成功長什麼樣？",
             scenario:
-              "簡單認識彼此後，有人問：「那我們這個專案老師到底在看什麼？只要做完簡報就好嗎？」大家對『成功』長什麼樣子其實沒有共識。",
-            hint: "組建期第二步，是具體化共同目標與老師期待。",
+              "簡單認識彼此後，有人問：「那我們這個專案老師到底在看什麼？只要做完簡報就好嗎？」大家對『成功』其實沒有共同畫面。",
+            hint: "組建期第二步，是具體化共同目標。",
             options: [
               {
                 key: "A",
@@ -674,11 +674,11 @@
                 moodDelta: 2,
                 goalDelta: 1,
                 feedback:
-                  "這能激發創意，但如果沒有再回到作業要求，最後會出現『玩得很開心但不符合題目』的風險。",
+                  "這能激發創意，但如果沒有再回到作業要求，最後會出現「玩得很開心但不符合題目」的風險。",
               },
               {
                 key: "C",
-                text: "你覺得自己大概知道老師要什麼，就簡單口頭說明一下：「反正就照以前那樣做就好」。",
+                text: "你覺得自己大概知道老師要什麼，就簡單口頭說明：「反正就照以前那樣做就好」。",
                 moodDelta: 0,
                 goalDelta: 1,
                 feedback:
@@ -695,7 +695,7 @@
         stageTag: "Stage 2 · Storming",
         interactions: [
           {
-            title: "第一次大吵架：進度與態度的衝突",
+            title: "第一次大吵架：進度與態度",
             scenario:
               "第二週，有人嫌 A 同學做事太慢，B 同學直接在群組留言：「你可以認真一點嗎？」A 很不開心，已經兩天都沒有回訊息，群組氣氛變得很尷尬。",
             hint: "風暴期的關鍵，是如何面對衝突，而不是假裝沒事。",
@@ -714,7 +714,7 @@
                 moodDelta: 0,
                 goalDelta: 1,
                 feedback:
-                  "你有試著拉回專案主題，但對衝突本身並沒有真正處理。短期可能稍微降溫，但 A 的情緒和 B 的不滿都還在，之後同樣的問題容易再發生。",
+                  "你有試著拉回專案主題，但對衝突本身並沒有真正處理。短期可能稍微降溫，但情緒仍然存在，之後同樣問題容易再發生。",
               },
               {
                 key: "C",
@@ -738,7 +738,7 @@
                 moodDelta: 3,
                 goalDelta: 2,
                 feedback:
-                  "你把人當成『夥伴』而不是『工具』，比較有機會找出真正的卡點，也讓他感受到被尊重。",
+                  "你把人當成「夥伴」而不是「工具」，比較有機會找出真正的卡點，也讓他感受到被尊重。",
               },
               {
                 key: "B",
@@ -754,39 +754,7 @@
                 moodDelta: -2,
                 goalDelta: 1,
                 feedback:
-                  "短期看起來減少變數，但會讓團隊形成『小圈圈 vs 外人』的氛圍，也少了一次練習溝通與協調的機會。",
-              },
-            ],
-          },
-          {
-            title: "誤會訊息：文字吵架怎麼收尾？",
-            scenario:
-              "某次討論時，你在群組寫了一句話想提醒大家：「這樣做可能會來不及。」但有人成員解讀為你在否定他，情緒又上來，討論變成互嗆。",
-            hint: "風暴期要學的，是如何把討論從「對人」拉回「對事」。",
-            options: [
-              {
-                key: "A",
-                text: "立即在群組說明：「剛剛那句話是針對時程，不是針對你本人，抱歉讓你有這種感覺，我們一起來想怎麼調整。」",
-                moodDelta: 3,
-                goalDelta: 1,
-                feedback:
-                  "你主動修正訊息、承認影響，讓大家看到你願意為溝通負責，有助於建立安全感。",
-              },
-              {
-                key: "B",
-                text: "覺得對方太敏感，就回：「我只是很事實地講而已，不要想太多。」",
-                moodDelta: -2,
-                goalDelta: 0,
-                feedback:
-                  "這把焦點放在對方的『問題』，而不是一起解決誤會，容易讓衝突升級成攻擊。",
-              },
-              {
-                key: "C",
-                text: "先暫時不回，等大家冷靜幾個小時後再慢慢回覆，避免火上加油。",
-                moodDelta: 1,
-                goalDelta: 1,
-                feedback:
-                  "適度拉開距離有時是好事，但如果只是一味延後，問題仍然存在。之後還是需要回到『怎麼說比較好』的討論。",
+                  "短期看起來減少變數，但會讓團隊形成「小圈圈 vs 外人」的氛圍，也少了一次練習溝通與協調的機會。",
               },
             ],
           },
@@ -970,7 +938,7 @@
                 moodDelta: -1,
                 goalDelta: 0,
                 feedback:
-                  "這樣的結束方式最省事，但也讓很多學習與關係留在「可惜」的狀態。長期來看，會讓專案變成一次次的「任務」，較難累積成團隊資本。",
+                  "這樣的結束方式最省事，但也讓很多學習與關係留在「可惜」的狀態。",
               },
             ],
           },
@@ -1002,7 +970,7 @@
                 moodDelta: 0,
                 goalDelta: 0,
                 feedback:
-                  "少了一次把經驗沉澱下來的機會。對未來的自己來說，會變成『好像做過，但細節全忘了』。",
+                  "少了一次把經驗沉澱下來的機會。對未來的自己來說，會變成「好像做過，但細節全忘了」。",
               },
             ],
           },
@@ -1010,7 +978,7 @@
       },
     ];
 
-    // 根據情境自動計算可達到的最大分數，用於百分比顯示
+    // 自動計算可達到的最大分數（用來算百分比）
     const maxStageScore = (() => {
       let maxMood = 0;
       let maxGoal = 0;
@@ -1048,9 +1016,9 @@
     const btnCloseOverlay = document.getElementById("btnCloseOverlay");
     const btnNextStage = document.getElementById("btnNextStage");
 
-    let bufferedNext = null; // 暫存下一步動作（下一互動或下一階段或看結果）
+    let bufferedNext = null;
 
-    // ----- 渲染 Stage Bar -----
+    // ----- Stage Bar -----
     function renderStageBar() {
       stageBar.innerHTML = "";
       stages.forEach((stage, idx) => {
@@ -1077,7 +1045,7 @@
       });
     }
 
-    // ----- 更新分數與進度條 -----
+    // ----- 更新分數 -----
     function updateScores() {
       scoreMoodEl.textContent = totalMood;
       scoreGoalEl.textContent = totalGoal;
@@ -1097,7 +1065,7 @@
       goalPercentEl.textContent = goalPercent + "%";
     }
 
-    // ----- 渲染目前階段的目前互動 -----
+    // ----- 渲染目前小關卡 -----
     function renderCurrentInteraction() {
       const stage = stages[currentStageIndex];
       const inter = stage.interactions[currentInteractionIndex];
@@ -1124,7 +1092,7 @@
 
       const pill = document.createElement("div");
       pill.className = "pill";
-      pill.textContent = `${stage.name} · 互動 ${
+      pill.textContent = `${stage.name} · 小關卡 ${
         currentInteractionIndex + 1
       } / ${stage.interactions.length}`;
 
@@ -1167,11 +1135,11 @@
       const foot = document.createElement("div");
       foot.className = "foot-row";
       foot.innerHTML = `
-        <span>目前階段：${stage.name} · 互動 ${
+        <span>目前階段：${stage.name} · 小關卡 ${
         currentInteractionIndex + 1
       } / ${stage.interactions.length}</span>
         <button class="btn-ghost" type="button" id="btnSkipExplain">
-          每一小題選完後會看到解析，請放心選直覺答案
+          每一小關選完後會看到解析，請放心選直覺答案
         </button>
       `;
 
@@ -1184,13 +1152,13 @@
 
       const btnSkipExplain = document.getElementById("btnSkipExplain");
       btnSkipExplain.addEventListener("click", () => {
-        alert("做出選擇後，會跳出解析視窗，說明這一小題的學習重點與你選項的效果。");
+        alert("做出選擇後，會跳出解析視窗，說明這一小關的學習重點與你選項的效果。");
       });
 
       renderStageBar();
     }
 
-    // ----- 處理選擇 -----
+    // ----- 選項處理 -----
     function handleChoice(stageIndex, interactionIndex, opt) {
       const stage = stages[stageIndex];
       const inter = stage.interactions[interactionIndex];
@@ -1214,7 +1182,7 @@
 
       if (!isLastInteractionInStage) {
         bufferedNext = goToNextInteraction;
-        btnNextStage.textContent = "同階段下一小題 ▶";
+        btnNextStage.textContent = "同階段下一小關 ▶";
       } else if (!isLastStage) {
         bufferedNext = goToNextStage;
         btnNextStage.textContent = "前往下一階段 ▶";
@@ -1224,7 +1192,7 @@
       }
     }
 
-    // ----- 題目解析 Overlay -----
+    // ----- 解析 overlay -----
     function showFeedback(stage, inter, opt) {
       overlay.classList.add("show");
       feedbackTitleEl.textContent = `你在「${stage.name}－${
@@ -1251,7 +1219,7 @@
       }
     });
 
-    // ----- 前往同階段下一互動 -----
+    // ----- 小關卡 / 階段切換 -----
     function goToNextInteraction() {
       const stage = stages[currentStageIndex];
       if (currentInteractionIndex < stage.interactions.length - 1) {
@@ -1260,7 +1228,6 @@
       }
     }
 
-    // ----- 前往下一階段 -----
     function goToNextStage() {
       if (currentStageIndex < stages.length - 1) {
         currentStageIndex += 1;
@@ -1269,7 +1236,7 @@
       }
     }
 
-    // ----- 結果總結畫面 -----
+    // ----- 結果畫面 -----
     function showResult() {
       scenarioContainer.innerHTML = "";
 
@@ -1309,7 +1276,6 @@
       const grid = document.createElement("div");
       grid.className = "result-grid";
 
-      // Box 1: 分數
       const box1 = document.createElement("div");
       box1.className = "result-box";
       box1.innerHTML = `
@@ -1326,7 +1292,6 @@
         </p>
       `;
 
-      // Box 2: 五階段提醒
       const box2 = document.createElement("div");
       box2.className = "result-box";
       box2.innerHTML = `
@@ -1343,7 +1308,6 @@
       grid.appendChild(box1);
       grid.appendChild(box2);
 
-      // History box
       const historyBox = document.createElement("div");
       historyBox.className = "result-box mt-2";
       const hisTitle = document.createElement("h3");
@@ -1357,7 +1321,7 @@
       history.forEach((h) => {
         const li = document.createElement("li");
         li.innerHTML = `
-          <span>${h.stageName}</span>（互動 ${h.interactionNo}）：在「${
+          <span>${h.stageName}</span>（小關卡 ${h.interactionNo}）：在「${
           h.title
         }」中，你選擇了「${h.choiceKey} 選項」，<br/>
           ${h.choiceText}
