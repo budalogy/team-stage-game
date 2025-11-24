@@ -1,1377 +1,767 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <title>專案小隊大冒險：團隊五階段互動遊戲</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #0b1120;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.2);
-      --accent-strong: #22d3ee;
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --danger: #f97373;
-      --success: #4ade80;
-      --border-subtle: #1f2933;
-      --stage-done: #22c55e;
-      --stage-current: #facc15;
-    }
+<script>
+  // ----- 每個階段 2 個小關卡（跟上一版一樣） -----
+  const stages = [
+    {
+      id: 1,
+      key: "forming",
+      name: "組建期",
+      stageTag: "Stage 1 · Forming",
+      interactions: [
+        {
+          title: "第一次線上開會：超安靜的畫面",
+          scenario:
+            "你們被湊成一組，要在 8 週內完成系上的專案發表。第一次線上會議大家都有上線、也開了鏡頭，但畫面很安靜，沒人知道要先做什麼。",
+          hint: "組建期的重點是建立安全感與基本默契。",
+          options: [
+            {
+              key: "A",
+              text: "先請大家自我介紹，分享一件自己擅長或有興趣的事，再一起討論 Line 群組的基本規則與溝通方式。",
+              moodDelta: 3,
+              goalDelta: 1,
+              feedback:
+                "這是典型的「組建期友善開局」。透過自我介紹與討論規則，成員會覺得安全、被看見，也知道接下來怎麼互動，有助於後面的合作。",
+            },
+            {
+              key: "B",
+              text: "直接開始分工：「誰做簡報？誰找資料？誰負責跟老師溝通？」盡快把任務切完。",
+              moodDelta: 1,
+              goalDelta: 2,
+              feedback:
+                "你很專注在任務和效率，但忽略了成員還不熟、也不知道彼此的期待。短期看起來有效率，後面比較容易出現誤解與不滿。",
+            },
+            {
+              key: "C",
+              text: "讓大家自由聊天，隨機閒聊感情、興趣，反正時間還很多，先混熟再說。",
+              moodDelta: 2,
+              goalDelta: 0,
+              feedback:
+                "氣氛可能會不錯，但如果完全沒提專案目標與接下來怎麼做，大家會開始不確定自己要負責什麼，後面容易出現「我以為你會做」。",
+            },
+          ],
+        },
+        {
+          title: "目標共識：成功長什麼樣？",
+          scenario:
+            "簡單認識彼此後，有人問：「那我們這個專案老師到底在看什麼？只要做完簡報就好嗎？」大家對『成功』其實沒有共同畫面。",
+          hint: "組建期第二步，是具體化共同目標。",
+          options: [
+            {
+              key: "A",
+              text: "打開作業說明與評分標準，帶著大家一起勾出重點，再口頭確認：我們這組覺得『成功』至少要達到哪些條件。",
+              moodDelta: 2,
+              goalDelta: 3,
+              feedback:
+                "這會讓團隊從一開始就對『成功長什麼樣』有共同畫面，之後做決策時比較不會南轅北轍。",
+            },
+            {
+              key: "B",
+              text: "先不要管老師期待，大家各自說一個自己想做的方向，之後再慢慢收斂。",
+              moodDelta: 2,
+              goalDelta: 1,
+              feedback:
+                "這能激發創意，但如果沒有再回到作業要求，最後會出現「玩得很開心但不符合題目」的風險。",
+            },
+            {
+              key: "C",
+              text: "你覺得自己大概知道老師要什麼，就簡單口頭說明：「反正就照以前那樣做就好」。",
+              moodDelta: 0,
+              goalDelta: 1,
+              feedback:
+                "這樣做很省事，但目標是你一個人的猜測，其他人既不確定、也比較難投入。長期來看會拉高溝通成本。",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 2,
+      key: "storming",
+      name: "風暴期",
+      stageTag: "Stage 2 · Storming",
+      interactions: [
+        {
+          title: "第一次大吵架：進度與態度",
+          scenario:
+            "第二週，有人嫌 A 同學做事太慢，B 同學直接在群組留言：「你可以認真一點嗎？」A 很不開心，已經兩天都沒有回訊息，群組氣氛變得很尷尬。",
+          hint: "風暴期的關鍵，是如何面對衝突，而不是假裝沒事。",
+          options: [
+            {
+              key: "A",
+              text: "私訊 A 跟 B，分別了解狀況，之後開一個三方線上會議，請大家把不滿講清楚，一起重新調整分工與時程。",
+              moodDelta: 3,
+              goalDelta: 2,
+              feedback:
+                "這是比較成熟的衝突處理方式，接近「合作解決問題」。你讓情緒被看見，也讓大家重新對齊期待，有利於團隊長期的信任與績效。",
+            },
+            {
+              key: "B",
+              text: "在群組發一則訊息：「大家冷靜一點，有問題先講專案，不要攻擊人。」希望風波自己慢慢平息。",
+              moodDelta: 0,
+              goalDelta: 1,
+              feedback:
+                "你有試著拉回專案主題，但對衝突本身並沒有真正處理。短期可能稍微降溫，但情緒仍然存在，之後同樣問題容易再發生。",
+            },
+            {
+              key: "C",
+              text: "覺得大家都只是情緒上來，先不理會這些訊息，專注把自己負責的工作做完就好。",
+              moodDelta: -2,
+              goalDelta: 0,
+              feedback:
+                "這比較像「迴避衝突」。短期你省下溝通的麻煩，但對團隊氣氛傷害很大，之後可能出現消極、放棄或被動配合的成員。",
+            },
+          ],
+        },
+        {
+          title: "消失的成員：要不要點名？",
+          scenario:
+            "之後有一位成員 C 很少講話，交作業也常常拖到最後一刻。群組裡有人開始抱怨：「他根本在雷我們。」但 C 一直保持安靜。",
+          hint: "風暴期常出現『沈默成員』，處理方式會影響信任感。",
+          options: [
+            {
+              key: "A",
+              text: "私下約 C 一對一聊聊，先關心近況，再說明團隊目前遇到的困難，問他的想法與能負擔的程度。",
+              moodDelta: 3,
+              goalDelta: 2,
+              feedback:
+                "你把人當成「夥伴」而不是「工具」，比較有機會找出真正的卡點，也讓他感受到被尊重。",
+            },
+            {
+              key: "B",
+              text: "在群組公開點名：「C 這週都沒出現，大家等你回一下。」希望他感到壓力而開始行動。",
+              moodDelta: -1,
+              goalDelta: 1,
+              feedback:
+                "這可以短期逼出回應，但也可能讓 C 覺得被羞辱而更退縮。需要非常小心語氣與關係。",
+            },
+            {
+              key: "C",
+              text: "直接把 C 排除在分工之外，大家心裡默默當他不存在，以免被拖累。",
+              moodDelta: -2,
+              goalDelta: 1,
+              feedback:
+                "短期看起來減少變數，但會讓團隊形成「小圈圈 vs 外人」的氛圍，也少了一次練習溝通與協調的機會。",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 3,
+      key: "norming",
+      name: "正軌期",
+      stageTag: "Stage 3 · Norming",
+      interactions: [
+        {
+          title: "一起訂出具體規則",
+          scenario:
+            "吵完一輪之後，大家發現問題不少：有人常遲到，有人習慣不開鏡頭，有人做完事情也不講一聲。你們決定重新整理小組的「運作規則」。",
+          hint: "正軌期的重點，是一起建立看得見的團隊規範。",
+          options: [
+            {
+              key: "A",
+              text: "寫下一套具體規則：例如開會一律開鏡頭、遲到 10 分鐘要請飲料、每次會議前 1 小時提醒、會議後 24 小時內在群組 recap。",
+              moodDelta: 2,
+              goalDelta: 3,
+              feedback:
+                "這是很典型的正軌期做法：把運作方式具體化。大家知道彼此的承諾與標準，團隊會更穩定。不過要記得規則可以用經驗再調整，而不是一次定終身。",
+            },
+            {
+              key: "B",
+              text: "規則不要寫太死，大家互相體諒就好，有問題再說，避免把氣氛搞得太拘謹。",
+              moodDelta: 1,
+              goalDelta: 1,
+              feedback:
+                "看起來很彈性，但實際上就是「沒有清楚規則」。容易變成每次事情出錯都重新吵一次，團隊成本會越來越高。",
+            },
+            {
+              key: "C",
+              text: "只訂一條核心原則：每週交出成果就好，過程完全不管，只看結果。",
+              moodDelta: -1,
+              goalDelta: 2,
+              feedback:
+                "這對某些高度自律的團隊也許有效，但多數學生團隊仍需要基本的溝通與流程規則。不管過程，只看結果，往往會犧牲關係、也增加風險。",
+            },
+          ],
+        },
+        {
+          title: "有人覺得規則太多了",
+          scenario:
+            "新規則上路後，有成員覺得：「好像被管得很緊，有點喘不過氣。」你觀察到他開始變得被動、說話也比較酸。",
+          hint: "正軌期的規則需要『一起調整』，而不是一成不變。",
+          options: [
+            {
+              key: "A",
+              text: "安排一次短會議，邀請大家回饋哪些規則有幫助、哪些太多，調整成大家都能接受的版本。",
+              moodDelta: 3,
+              goalDelta: 2,
+              feedback:
+                "你把規則當成「共同作品」，而不是「強制命令」，可以提升規則的認同感與可執行性。",
+            },
+            {
+              key: "B",
+              text: "私下跟那位成員說：「這些規則都是為了大家好，你再忍一下。」希望他自己調適。",
+              moodDelta: 0,
+              goalDelta: 1,
+              feedback:
+                "你有試著溝通，但仍把焦點放在個人的適應，而不是規則本身是否需要微調。",
+            },
+            {
+              key: "C",
+              text: "覺得他只是愛抱怨，不特別理會，反正大多數人都沒意見。",
+              moodDelta: -2,
+              goalDelta: 0,
+              feedback:
+                "忽略少數聲音，短期看起來效率較高，但長期容易導致冷漠與消極服從，削弱團隊凝聚力。",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 4,
+      key: "performing",
+      name: "風采期",
+      stageTag: "Stage 4 · Performing",
+      interactions: [
+        {
+          title: "要不要加碼挑戰？",
+          scenario:
+            "專案進行到第 6 週，進度超前，老師也稱讚你們做得很好。這時有人提議：「既然我們那麼順，要不要再多做一個延伸活動，讓專案更有亮點？」",
+          hint: "風采期可以追求更高成就，但要有意識地管理風險與負荷。",
+          options: [
+            {
+              key: "A",
+              text: "同意加碼，但先重新評估每個人目前的負荷與時間，調整分工，並確認所有人都願意再多投入。",
+              moodDelta: 2,
+              goalDelta: 3,
+              feedback:
+                "這是兼顧成就感與可行性的做法。你同時考慮了專案範疇（Scope）、團隊負荷與成員意願，是風采期很好的學習機會。",
+            },
+            {
+              key: "B",
+              text: "拒絕加碼，維持原本計畫就好，避免冒不必要的風險，專案順利完成比較重要。",
+              moodDelta: 1,
+              goalDelta: 2,
+              feedback:
+                "你很重視「穩健完成」，這也是專案管理的重要價值。不過如果團隊其實還有餘裕，可能少了一次一起挑戰與成長的機會。",
+            },
+            {
+              key: "C",
+              text: "直接答應加碼，多做多拿成績，反正大家都那麼厲害，應該沒問題。",
+              moodDelta: -1,
+              goalDelta: 1,
+              feedback:
+                "這樣的決定可能帶來短期的興奮感，但忽略了風險與資源限制，容易讓團隊在最後階段過度疲乏，甚至 Burn out。",
+            },
+          ],
+        },
+        {
+          title: "有人開始出現疲勞感",
+          scenario:
+            "加碼之後，有成員說最近作業、打工都很多，雖然還是有交成果，但明顯比以前更累、更沒笑容。",
+          hint: "風采期容易忽略『可持續性』，需要注意團隊節奏。",
+          options: [
+            {
+              key: "A",
+              text: "在會議中開誠布公地談工作量，重新分配任務，必要時把加碼內容縮小或簡化。",
+              moodDelta: 3,
+              goalDelta: 2,
+              feedback:
+                "你兼顧了人和事，願意調整目標來保護團隊，這有助於建立長期合作的信任。",
+            },
+            {
+              key: "B",
+              text: "鼓勵大家再撐一下：「就剩最後幾週了，咬牙過去就好。」",
+              moodDelta: 0,
+              goalDelta: 2,
+              feedback:
+                "這有時也需要，但如果只是一味要求撐住，沒有任何調整，會讓人覺得被消耗，而不是被支持。",
+            },
+            {
+              key: "C",
+              text: "覺得大家都是大學生了，能做就做，撐不住就退出，沒必要為別人的壓力調整專案。",
+              moodDelta: -2,
+              goalDelta: 0,
+              feedback:
+                "這樣的態度容易讓團隊變成「各做各的」，失去共同承擔與互相照顧的精神。",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 5,
+      key: "adjourning",
+      name: "解散期",
+      stageTag: "Stage 5 · Adjourning",
+      interactions: [
+        {
+          title: "說再見之前：怎麼好好收尾？",
+          scenario:
+            "專案發表順利結束，老師和同學都給了不錯的回饋。有人已經在忙下一個活動，有人覺得終於解脫，也有人覺得有點捨不得這個團隊。",
+          hint: "解散期不只是「交差」，也是整理學習與關係的好時機。",
+          options: [
+            {
+              key: "A",
+              text: "安排一場小小的線上或實體聚會，回顧專案的高低起伏，互相給回饋與感謝，整理檔案後再說再見。",
+              moodDelta: 3,
+              goalDelta: 2,
+              feedback:
+                "這樣的收尾方式能幫助大家把經驗轉成學習，也修補過程中可能累積的誤解，為未來的合作留下一個好印象。",
+            },
+            {
+              key: "B",
+              text: "在群組發一則訊息：「謝謝大家這段時間的努力」，整理好檔案上傳雲端，就讓群組自然安靜下來。",
+              moodDelta: 1,
+              goalDelta: 1,
+              feedback:
+                "這是最低限度的收尾，基本有做到交代，但少了更深的反思與道別。未來要再合作時，大家對彼此的印象會比較模糊。",
+            },
+            {
+              key: "C",
+              text: "作業都交了，成績也出來了，大家都很忙，就不特別做什麼收尾，直接各忙各的。",
+              moodDelta: -1,
+              goalDelta: 0,
+              feedback:
+                "這樣的結束方式最省事，但也讓很多學習與關係留在「可惜」的狀態。",
+            },
+          ],
+        },
+        {
+          title: "留下什麼給未來的自己？",
+          scenario:
+            "專案資料都在雲端，但大家都準備退群組了。有人問：「我們要不要留點什麼給未來如果還要做專案的學弟妹／未來的自己？」",
+          hint: "解散期也是知識管理與經驗傳承的時刻。",
+          options: [
+            {
+              key: "A",
+              text: "整理一份簡短的『專案懶人包』：包含踩過的雷、好用的做法、檔案路徑，放在共用資料夾。",
+              moodDelta: 2,
+              goalDelta: 3,
+              feedback:
+                "這會讓經驗變成可以傳承的資產，也訓練自己用結構化方式回顧整個專案。",
+            },
+            {
+              key: "B",
+              text: "各自在 Notion 或筆記本寫個人反思，不另外整理出共用文件。",
+              moodDelta: 2,
+              goalDelta: 1,
+              feedback:
+                "對個人學習很有幫助，但團隊層次的資源比較無法延續。若時間有限，這也算是不錯的選擇。",
+            },
+            {
+              key: "C",
+              text: "覺得整理很花時間，反正之後也不一定會看到，就不特別做什麼。",
+              moodDelta: 0,
+              goalDelta: 0,
+              feedback:
+                "少了一次把經驗沉澱下來的機會。對未來的自己來說，會變成「好像做過，但細節全忘了」。",
+            },
+          ],
+        },
+      ],
+    },
+  ];
 
-    * {
-      box-sizing: border-box;
-    }
+  // 顯示時用來標 A/B/C/D 的字母（正確答案不綁定在某個字母）
+  const optionLetters = ["A", "B", "C", "D"];
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
+  // 自動計算最大可得分
+  const maxStageScore = (() => {
+    let maxMood = 0;
+    let maxGoal = 0;
+    stages.forEach((stage) => {
+      stage.interactions.forEach((inter) => {
+        const moodMax = Math.max(...inter.options.map((o) => o.moodDelta));
+        const goalMax = Math.max(...inter.options.map((o) => o.goalDelta));
+        maxMood += moodMax;
+        maxGoal += goalMax;
+      });
+    });
+    return { mood: maxMood, goal: maxGoal };
+  })();
 
-    #app {
-      max-width: 960px;
-      width: 100%;
-    }
+  let currentStageIndex = 0;
+  let currentInteractionIndex = 0;
+  let totalMood = 0;
+  let totalGoal = 0;
+  let history = [];
 
-    .card {
-      background: linear-gradient(145deg, #020617, #020617, #020617);
-      border-radius: 18px;
-      padding: 20px 20px 24px;
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(18px);
-    }
+  const stageBar = document.getElementById("stageBar");
+  const scenarioContainer = document.getElementById("scenarioContainer");
+  const scoreMoodEl = document.getElementById("score-mood");
+  const scoreGoalEl = document.getElementById("score-goal");
+  const moodFill = document.getElementById("moodFill");
+  const goalFill = document.getElementById("goalFill");
+  const moodPercentEl = document.getElementById("moodPercent");
+  const goalPercentEl = document.getElementById("goalPercent");
 
-    @media (min-width: 768px) {
-      .card {
-        padding: 24px 26px 28px;
+  const overlay = document.getElementById("overlay");
+  const feedbackTitleEl = document.getElementById("feedbackTitle");
+  const feedbackChipEl = document.getElementById("feedbackChip");
+  const feedbackBodyEl = document.getElementById("feedbackBody");
+  const feedbackNoteEl = document.getElementById("feedbackNote");
+  const btnCloseOverlay = document.getElementById("btnCloseOverlay");
+  const btnNextStage = document.getElementById("btnNextStage");
+
+  let bufferedNext = null;
+
+  // ----- Stage bar -----
+  function renderStageBar() {
+    stageBar.innerHTML = "";
+    stages.forEach((stage, idx) => {
+      const item = document.createElement("div");
+      item.className = "stage-item";
+      if (idx < currentStageIndex) {
+        item.classList.add("done");
+      } else if (idx === currentStageIndex) {
+        item.classList.add("current");
       }
-    }
+      const dot = document.createElement("div");
+      dot.className = "stage-dot";
+      const inner = document.createElement("div");
+      inner.className = "stage-dot-inner";
+      dot.appendChild(inner);
 
-    .header-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+      const label = document.createElement("div");
+      label.className = "stage-label";
+      label.textContent = `${stage.id}. ${stage.name}`;
 
-    .title-block h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      letter-spacing: 0.03em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      item.appendChild(dot);
+      item.appendChild(label);
+      stageBar.appendChild(item);
+    });
+  }
 
-    .badge {
-      font-size: 0.72rem;
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: var(--text-soft);
-    }
+  // ----- 更新分數 -----
+  function updateScores() {
+    scoreMoodEl.textContent = totalMood;
+    scoreGoalEl.textContent = totalGoal;
 
-    .subtitle {
-      margin-top: 4px;
-      font-size: 0.88rem;
-      color: var(--text-soft);
-    }
+    const moodPercent = Math.max(
+      0,
+      Math.min(100, Math.round((totalMood / maxStageScore.mood) * 100))
+    );
+    const goalPercent = Math.max(
+      0,
+      Math.min(100, Math.round((totalGoal / maxStageScore.goal) * 100))
+    );
 
-    .scores {
-      text-align: right;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-    }
+    moodFill.style.width = moodPercent + "%";
+    goalFill.style.width = goalPercent + "%";
+    moodPercentEl.textContent = moodPercent + "%";
+    goalPercentEl.textContent = goalPercent + "%";
+  }
 
-    .score-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      border-radius: 999px;
-      padding: 4px 9px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      margin-left: 6px;
-      background: radial-gradient(circle at top left, #0f172a, #020617);
-    }
+  // ----- 渲染目前小關卡（這裡加入「洗牌 options」） -----
+  function renderCurrentInteraction() {
+    const stage = stages[currentStageIndex];
+    const inter = stage.interactions[currentInteractionIndex];
 
-    .score-label {
-      font-size: 0.75rem;
-      color: var(--text-soft);
-    }
+    scenarioContainer.innerHTML = "";
 
-    .score-value {
-      font-weight: 600;
-    }
+    const wrapper = document.createElement("div");
+    wrapper.className = "scenario";
 
-    /* Stage steps */
-    .stage-bar {
-      margin: 10px 0 18px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: radial-gradient(circle at left, #0b1120, #020617);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow-x: auto;
-    }
+    const header = document.createElement("div");
+    header.className = "scenario-header";
 
-    .stage-item {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      opacity: 0.75;
-    }
+    const leftHeader = document.createElement("div");
+    const tag = document.createElement("div");
+    tag.className = "scenario-stage-tag";
+    tag.textContent = stage.stageTag;
+    const title = document.createElement("h2");
+    title.className = "scenario-title";
+    title.textContent = `${stage.id}-${currentInteractionIndex + 1}. ${
+      inter.title
+    }`;
+    leftHeader.appendChild(tag);
+    leftHeader.appendChild(title);
 
-    .stage-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      border: 2px solid rgba(148, 163, 184, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      background: #020617;
-    }
+    const pill = document.createElement("div");
+    pill.className = "pill";
+    pill.textContent = `${stage.name} · 小關卡 ${
+      currentInteractionIndex + 1
+    } / ${stage.interactions.length}`;
 
-    .stage-dot-inner {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: transparent;
-    }
+    header.appendChild(leftHeader);
+    header.appendChild(pill);
 
-    .stage-item.current {
-      color: #fefce8;
-      opacity: 1;
-    }
+    const body = document.createElement("div");
+    body.className = "scenario-body";
+    body.textContent = inter.scenario;
 
-    .stage-item.current .stage-dot {
-      border-color: var(--stage-current);
-      box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
-    }
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "老師提示｜" + inter.hint;
 
-    .stage-item.current .stage-dot-inner {
-      background: var(--stage-current);
-    }
+    const optionsDiv = document.createElement("div");
+    optionsDiv.className = "options";
 
-    .stage-item.done {
-      color: #bbf7d0;
-      opacity: 0.95;
-    }
+    // 這裡：複製一份 options，打散順序
+    const shuffledOptions = [...inter.options].sort(
+      () => Math.random() - 0.5
+    );
 
-    .stage-item.done .stage-dot {
-      border-color: var(--stage-done);
-    }
+    shuffledOptions.forEach((opt, idx) => {
+      const letter =
+        optionLetters[idx] || String.fromCharCode(65 + idx); // A/B/C...
 
-    .stage-item.done .stage-dot-inner {
-      background: var(--stage-done);
-    }
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.type = "button";
 
-    .stage-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      const keySpan = document.createElement("span");
+      keySpan.className = "option-key";
+      keySpan.textContent = letter;
 
-    /* Progress bars */
-    .progress-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+      const textSpan = document.createElement("span");
+      textSpan.className = "option-text";
+      textSpan.textContent = opt.text;
 
-    .progress-block {
-      font-size: 0.78rem;
-    }
+      btn.appendChild(keySpan);
+      btn.appendChild(textSpan);
 
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 3px;
-      color: var(--text-soft);
-    }
-
-    .progress-bar {
-      position: relative;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.96);
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      position: absolute;
-      inset: 0;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(
-        90deg,
-        var(--accent),
-        var(--accent-strong)
+      btn.addEventListener("click", () =>
+        handleChoice(currentStageIndex, currentInteractionIndex, opt, letter)
       );
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
-      transition: width 0.4s ease-out;
-    }
-
-    /* Scenario */
-    .scenario {
-      border-radius: 16px;
-      padding: 14px 14px 16px;
-      background: radial-gradient(circle at top left, #0f172a, #020617);
-      border: 1px solid rgba(148, 163, 184, 0.32);
-    }
-
-    .scenario-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .scenario-stage-tag {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent-strong);
-    }
-
-    .scenario-title {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .scenario-body {
-      font-size: 0.9rem;
-      color: var(--text-main);
-      margin-bottom: 12px;
-      line-height: 1.6;
-    }
-
-    .hint {
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      margin-bottom: 10px;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .option-btn {
-      width: 100%;
-      text-align: left;
-      border-radius: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.38);
-      padding: 10px 12px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
-        border-color 0.08s ease-out, background 0.08s ease-out;
-    }
-
-    .option-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.7);
-      border-color: var(--accent);
-      background: radial-gradient(
-        circle at top left,
-        rgba(56, 189, 248, 0.22),
-        rgba(15, 23, 42, 0.98)
-      );
-    }
-
-    .option-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.75);
-    }
-
-    .option-key {
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: var(--accent-strong);
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .option-text {
-      flex: 1;
-    }
-
-    .foot-row {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill {
-      padding: 4px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 0.78rem;
-      padding: 4px 6px;
-    }
-
-    .btn-ghost:hover {
-      text-decoration: underline;
-    }
-
-    /* Feedback overlay */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.78);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 20;
-    }
-
-    .overlay.show {
-      display: flex;
-    }
-
-    .feedback-card {
-      max-width: 520px;
-      width: 100%;
-      background: radial-gradient(circle at top, #020617, #020617);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
-      padding: 18px 18px 16px;
-    }
-
-    .feedback-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .feedback-title {
-      font-size: 0.98rem;
-      font-weight: 600;
-    }
-
-    .feedback-chip {
-      font-size: 0.7rem;
-      padding: 3px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: var(--text-soft);
-    }
-
-    .feedback-body {
-      font-size: 0.86rem;
-      color: var(--text-main);
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-
-    .feedback-note {
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      margin-bottom: 14px;
-    }
-
-    .feedback-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 14px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(
-        90deg,
-        var(--accent),
-        var(--accent-strong)
-      );
-      color: #0b1120;
-      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.55);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.55);
-    }
-
-    /* Result screen */
-    .result-title {
-      font-size: 1.1rem;
-      margin: 0 0 6px;
-    }
-
-    .result-highlight {
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-      color: var(--accent-strong);
-    }
-
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .result-box {
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 10px 11px;
-      font-size: 0.83rem;
-      background: radial-gradient(circle at top left, #020617, #020617);
-    }
-
-    .result-box h3 {
-      margin: 0 0 4px;
-      font-size: 0.9rem;
-      color: #e5e7eb;
-    }
-
-    .result-badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .result-badge {
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: var(--text-soft);
-    }
-
-    .result-text {
-      margin: 0;
-      color: var(--text-soft);
-      line-height: 1.5;
-    }
-
-    .history-list {
-      font-size: 0.8rem;
-      color: var(--text-soft);
-      list-style: decimal;
-      padding-left: 18px;
-      margin: 4px 0 0;
-    }
-
-    .history-list li span {
-      color: var(--accent-strong);
-      font-weight: 600;
-    }
-
-    .mt-2 {
-      margin-top: 8px;
-    }
-
-    .mt-3 {
-      margin-top: 12px;
-    }
-
-    .text-accent {
-      color: var(--accent-strong);
-    }
-
-    .btn-small {
-      font-size: 0.78rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: transparent;
-      color: var(--accent);
-      cursor: pointer;
-    }
-
-    .btn-small:hover {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.12);
-    }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <div class="card">
-      <div class="header-row">
-        <div class="title-block">
-          <h1>
-            專案小隊大冒險
-            <span class="badge">團隊五階段互動遊戲</span>
-          </h1>
-          <p class="subtitle">
-            每個階段都有兩個小關卡，請依直覺選擇：看看你的選擇會如何影響
-            <span class="text-accent">團隊氣氛值</span> 與
-            <span class="text-accent">目標達成度</span>，體驗從
-            組建期 → 風暴期 → 正軌期 → 風采期 → 解散期 的完整歷程。
-          </p>
-        </div>
-        <div class="scores">
-          <div class="score-pill">
-            <span class="score-label">團隊氣氛值</span>
-            <span class="score-value" id="score-mood">0</span>
-          </div>
-          <div class="score-pill">
-            <span class="score-label">目標達成度</span>
-            <span class="score-value" id="score-goal">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stage bar -->
-      <div class="stage-bar" id="stageBar"></div>
-
-      <!-- Progress -->
-      <div class="progress-row">
-        <div class="progress-block">
-          <div class="progress-label">
-            <span>團隊氣氛</span>
-            <span id="moodPercent">0%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="moodFill"></div>
-          </div>
-        </div>
-        <div class="progress-block">
-          <div class="progress-label">
-            <span>目標達成</span>
-            <span id="goalPercent">0%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="goalFill"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scenario / Result -->
-      <div id="scenarioContainer"></div>
-    </div>
-  </div>
-
-  <!-- Feedback overlay -->
-  <div class="overlay" id="overlay">
-    <div class="feedback-card">
-      <div class="feedback-header">
-        <div class="feedback-title" id="feedbackTitle"></div>
-        <div class="feedback-chip" id="feedbackChip"></div>
-      </div>
-      <div class="feedback-body" id="feedbackBody"></div>
-      <div class="feedback-note" id="feedbackNote"></div>
-      <div class="feedback-actions">
-        <button class="btn-small" id="btnCloseOverlay">再看一下題目</button>
-        <button class="btn-primary" id="btnNextStage">下一步 ▶</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ----- 每個階段 2 個小關卡 -----
-    const stages = [
-      {
-        id: 1,
-        key: "forming",
-        name: "組建期",
-        stageTag: "Stage 1 · Forming",
-        interactions: [
-          {
-            title: "第一次線上開會：超安靜的畫面",
-            scenario:
-              "你們被湊成一組，要在 8 週內完成系上的專案發表。第一次線上會議大家都有上線、也開了鏡頭，但畫面很安靜，沒人知道要先做什麼。",
-            hint: "組建期的重點是建立安全感與基本默契。",
-            options: [
-              {
-                key: "A",
-                text: "先請大家自我介紹，分享一件自己擅長或有興趣的事，再一起討論 Line 群組的基本規則與溝通方式。",
-                moodDelta: 3,
-                goalDelta: 1,
-                feedback:
-                  "這是典型的「組建期友善開局」。透過自我介紹與討論規則，成員會覺得安全、被看見，也知道接下來怎麼互動，有助於後面的合作。",
-              },
-              {
-                key: "B",
-                text: "直接開始分工：「誰做簡報？誰找資料？誰負責跟老師溝通？」盡快把任務切完。",
-                moodDelta: 1,
-                goalDelta: 2,
-                feedback:
-                  "你很專注在任務和效率，但忽略了成員還不熟、也不知道彼此的期待。短期看起來有效率，後面比較容易出現誤解與不滿。",
-              },
-              {
-                key: "C",
-                text: "讓大家自由聊天，隨機閒聊感情、興趣，反正時間還很多，先混熟再說。",
-                moodDelta: 2,
-                goalDelta: 0,
-                feedback:
-                  "氣氛可能會不錯，但如果完全沒提專案目標與接下來怎麼做，大家會開始不確定自己要負責什麼，後面容易出現「我以為你會做」。",
-              },
-            ],
-          },
-          {
-            title: "目標共識：成功長什麼樣？",
-            scenario:
-              "簡單認識彼此後，有人問：「那我們這個專案老師到底在看什麼？只要做完簡報就好嗎？」大家對『成功』其實沒有共同畫面。",
-            hint: "組建期第二步，是具體化共同目標。",
-            options: [
-              {
-                key: "A",
-                text: "打開作業說明與評分標準，帶著大家一起勾出重點，再口頭確認：我們這組覺得『成功』至少要達到哪些條件。",
-                moodDelta: 2,
-                goalDelta: 3,
-                feedback:
-                  "這會讓團隊從一開始就對『成功長什麼樣』有共同畫面，之後做決策時比較不會南轅北轍。",
-              },
-              {
-                key: "B",
-                text: "先不要管老師期待，大家各自說一個自己想做的方向，之後再慢慢收斂。",
-                moodDelta: 2,
-                goalDelta: 1,
-                feedback:
-                  "這能激發創意，但如果沒有再回到作業要求，最後會出現「玩得很開心但不符合題目」的風險。",
-              },
-              {
-                key: "C",
-                text: "你覺得自己大概知道老師要什麼，就簡單口頭說明：「反正就照以前那樣做就好」。",
-                moodDelta: 0,
-                goalDelta: 1,
-                feedback:
-                  "這樣做很省事，但目標是你一個人的猜測，其他人既不確定、也比較難投入。長期來看會拉高溝通成本。",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 2,
-        key: "storming",
-        name: "風暴期",
-        stageTag: "Stage 2 · Storming",
-        interactions: [
-          {
-            title: "第一次大吵架：進度與態度",
-            scenario:
-              "第二週，有人嫌 A 同學做事太慢，B 同學直接在群組留言：「你可以認真一點嗎？」A 很不開心，已經兩天都沒有回訊息，群組氣氛變得很尷尬。",
-            hint: "風暴期的關鍵，是如何面對衝突，而不是假裝沒事。",
-            options: [
-              {
-                key: "A",
-                text: "私訊 A 跟 B，分別了解狀況，之後開一個三方線上會議，請大家把不滿講清楚，一起重新調整分工與時程。",
-                moodDelta: 3,
-                goalDelta: 2,
-                feedback:
-                  "這是比較成熟的衝突處理方式，接近「合作解決問題」。你讓情緒被看見，也讓大家重新對齊期待，有利於團隊長期的信任與績效。",
-              },
-              {
-                key: "B",
-                text: "在群組發一則訊息：「大家冷靜一點，有問題先講專案，不要攻擊人。」希望風波自己慢慢平息。",
-                moodDelta: 0,
-                goalDelta: 1,
-                feedback:
-                  "你有試著拉回專案主題，但對衝突本身並沒有真正處理。短期可能稍微降溫，但情緒仍然存在，之後同樣問題容易再發生。",
-              },
-              {
-                key: "C",
-                text: "覺得大家都只是情緒上來，先不理會這些訊息，專注把自己負責的工作做完就好。",
-                moodDelta: -2,
-                goalDelta: 0,
-                feedback:
-                  "這比較像「迴避衝突」。短期你省下溝通的麻煩，但對團隊氣氛傷害很大，之後可能出現消極、放棄或被動配合的成員。",
-              },
-            ],
-          },
-          {
-            title: "消失的成員：要不要點名？",
-            scenario:
-              "之後有一位成員 C 很少講話，交作業也常常拖到最後一刻。群組裡有人開始抱怨：「他根本在雷我們。」但 C 一直保持安靜。",
-            hint: "風暴期常出現『沈默成員』，處理方式會影響信任感。",
-            options: [
-              {
-                key: "A",
-                text: "私下約 C 一對一聊聊，先關心近況，再說明團隊目前遇到的困難，問他的想法與能負擔的程度。",
-                moodDelta: 3,
-                goalDelta: 2,
-                feedback:
-                  "你把人當成「夥伴」而不是「工具」，比較有機會找出真正的卡點，也讓他感受到被尊重。",
-              },
-              {
-                key: "B",
-                text: "在群組公開點名：「C 這週都沒出現，大家等你回一下。」希望他感到壓力而開始行動。",
-                moodDelta: -1,
-                goalDelta: 1,
-                feedback:
-                  "這可以短期逼出回應，但也可能讓 C 覺得被羞辱而更退縮。需要非常小心語氣與關係。",
-              },
-              {
-                key: "C",
-                text: "直接把 C 排除在分工之外，大家心裡默默當他不存在，以免被拖累。",
-                moodDelta: -2,
-                goalDelta: 1,
-                feedback:
-                  "短期看起來減少變數，但會讓團隊形成「小圈圈 vs 外人」的氛圍，也少了一次練習溝通與協調的機會。",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 3,
-        key: "norming",
-        name: "正軌期",
-        stageTag: "Stage 3 · Norming",
-        interactions: [
-          {
-            title: "一起訂出具體規則",
-            scenario:
-              "吵完一輪之後，大家發現問題不少：有人常遲到，有人習慣不開鏡頭，有人做完事情也不講一聲。你們決定重新整理小組的「運作規則」。",
-            hint: "正軌期的重點，是一起建立看得見的團隊規範。",
-            options: [
-              {
-                key: "A",
-                text: "寫下一套具體規則：例如開會一律開鏡頭、遲到 10 分鐘要請飲料、每次會議前 1 小時提醒、會議後 24 小時內在群組 recap。",
-                moodDelta: 2,
-                goalDelta: 3,
-                feedback:
-                  "這是很典型的正軌期做法：把運作方式具體化。大家知道彼此的承諾與標準，團隊會更穩定。不過要記得規則可以用經驗再調整，而不是一次定終身。",
-              },
-              {
-                key: "B",
-                text: "規則不要寫太死，大家互相體諒就好，有問題再說，避免把氣氛搞得太拘謹。",
-                moodDelta: 1,
-                goalDelta: 1,
-                feedback:
-                  "看起來很彈性，但實際上就是「沒有清楚規則」。容易變成每次事情出錯都重新吵一次，團隊成本會越來越高。",
-              },
-              {
-                key: "C",
-                text: "只訂一條核心原則：每週交出成果就好，過程完全不管，只看結果。",
-                moodDelta: -1,
-                goalDelta: 2,
-                feedback:
-                  "這對某些高度自律的團隊也許有效，但多數學生團隊仍需要基本的溝通與流程規則。不管過程，只看結果，往往會犧牲關係、也增加風險。",
-              },
-            ],
-          },
-          {
-            title: "有人覺得規則太多了",
-            scenario:
-              "新規則上路後，有成員覺得：「好像被管得很緊，有點喘不過氣。」你觀察到他開始變得被動、說話也比較酸。",
-            hint: "正軌期的規則需要『一起調整』，而不是一成不變。",
-            options: [
-              {
-                key: "A",
-                text: "安排一次短會議，邀請大家回饋哪些規則有幫助、哪些太多，調整成大家都能接受的版本。",
-                moodDelta: 3,
-                goalDelta: 2,
-                feedback:
-                  "你把規則當成「共同作品」，而不是「強制命令」，可以提升規則的認同感與可執行性。",
-              },
-              {
-                key: "B",
-                text: "私下跟那位成員說：「這些規則都是為了大家好，你再忍一下。」希望他自己調適。",
-                moodDelta: 0,
-                goalDelta: 1,
-                feedback:
-                  "你有試著溝通，但仍把焦點放在個人的適應，而不是規則本身是否需要微調。",
-              },
-              {
-                key: "C",
-                text: "覺得他只是愛抱怨，不特別理會，反正大多數人都沒意見。",
-                moodDelta: -2,
-                goalDelta: 0,
-                feedback:
-                  "忽略少數聲音，短期看起來效率較高，但長期容易導致冷漠與消極服從，削弱團隊凝聚力。",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 4,
-        key: "performing",
-        name: "風采期",
-        stageTag: "Stage 4 · Performing",
-        interactions: [
-          {
-            title: "要不要加碼挑戰？",
-            scenario:
-              "專案進行到第 6 週，進度超前，老師也稱讚你們做得很好。這時有人提議：「既然我們那麼順，要不要再多做一個延伸活動，讓專案更有亮點？」",
-            hint: "風采期可以追求更高成就，但要有意識地管理風險與負荷。",
-            options: [
-              {
-                key: "A",
-                text: "同意加碼，但先重新評估每個人目前的負荷與時間，調整分工，並確認所有人都願意再多投入。",
-                moodDelta: 2,
-                goalDelta: 3,
-                feedback:
-                  "這是兼顧成就感與可行性的做法。你同時考慮了專案範疇（Scope）、團隊負荷與成員意願，是風采期很好的學習機會。",
-              },
-              {
-                key: "B",
-                text: "拒絕加碼，維持原本計畫就好，避免冒不必要的風險，專案順利完成比較重要。",
-                moodDelta: 1,
-                goalDelta: 2,
-                feedback:
-                  "你很重視「穩健完成」，這也是專案管理的重要價值。不過如果團隊其實還有餘裕，可能少了一次一起挑戰與成長的機會。",
-              },
-              {
-                key: "C",
-                text: "直接答應加碼，多做多拿成績，反正大家都那麼厲害，應該沒問題。",
-                moodDelta: -1,
-                goalDelta: 1,
-                feedback:
-                  "這樣的決定可能帶來短期的興奮感，但忽略了風險與資源限制，容易讓團隊在最後階段過度疲乏，甚至 Burn out。",
-              },
-            ],
-          },
-          {
-            title: "有人開始出現疲勞感",
-            scenario:
-              "加碼之後，有成員說最近作業、打工都很多，雖然還是有交成果，但明顯比以前更累、更沒笑容。",
-            hint: "風采期容易忽略『可持續性』，需要注意團隊節奏。",
-            options: [
-              {
-                key: "A",
-                text: "在會議中開誠布公地談工作量，重新分配任務，必要時把加碼內容縮小或簡化。",
-                moodDelta: 3,
-                goalDelta: 2,
-                feedback:
-                  "你兼顧了人和事，願意調整目標來保護團隊，這有助於建立長期合作的信任。",
-              },
-              {
-                key: "B",
-                text: "鼓勵大家再撐一下：「就剩最後幾週了，咬牙過去就好。」",
-                moodDelta: 0,
-                goalDelta: 2,
-                feedback:
-                  "這有時也需要，但如果只是一味要求撐住，沒有任何調整，會讓人覺得被消耗，而不是被支持。",
-              },
-              {
-                key: "C",
-                text: "覺得大家都是大學生了，能做就做，撐不住就退出，沒必要為別人的壓力調整專案。",
-                moodDelta: -2,
-                goalDelta: 0,
-                feedback:
-                  "這樣的態度容易讓團隊變成「各做各的」，失去共同承擔與互相照顧的精神。",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 5,
-        key: "adjourning",
-        name: "解散期",
-        stageTag: "Stage 5 · Adjourning",
-        interactions: [
-          {
-            title: "說再見之前：怎麼好好收尾？",
-            scenario:
-              "專案發表順利結束，老師和同學都給了不錯的回饋。有人已經在忙下一個活動，有人覺得終於解脫，也有人覺得有點捨不得這個團隊。",
-            hint: "解散期不只是「交差」，也是整理學習與關係的好時機。",
-            options: [
-              {
-                key: "A",
-                text: "安排一場小小的線上或實體聚會，回顧專案的高低起伏，互相給回饋與感謝，整理檔案後再說再見。",
-                moodDelta: 3,
-                goalDelta: 2,
-                feedback:
-                  "這樣的收尾方式能幫助大家把經驗轉成學習，也修補過程中可能累積的誤解，為未來的合作留下一個好印象。",
-              },
-              {
-                key: "B",
-                text: "在群組發一則訊息：「謝謝大家這段時間的努力」，整理好檔案上傳雲端，就讓群組自然安靜下來。",
-                moodDelta: 1,
-                goalDelta: 1,
-                feedback:
-                  "這是最低限度的收尾，基本有做到交代，但少了更深的反思與道別。未來要再合作時，大家對彼此的印象會比較模糊。",
-              },
-              {
-                key: "C",
-                text: "作業都交了，成績也出來了，大家都很忙，就不特別做什麼收尾，直接各忙各的。",
-                moodDelta: -1,
-                goalDelta: 0,
-                feedback:
-                  "這樣的結束方式最省事，但也讓很多學習與關係留在「可惜」的狀態。",
-              },
-            ],
-          },
-          {
-            title: "留下什麼給未來的自己？",
-            scenario:
-              "專案資料都在雲端，但大家都準備退群組了。有人問：「我們要不要留點什麼給未來如果還要做專案的學弟妹／未來的自己？」",
-            hint: "解散期也是知識管理與經驗傳承的時刻。",
-            options: [
-              {
-                key: "A",
-                text: "整理一份簡短的『專案懶人包』：包含踩過的雷、好用的做法、檔案路徑，放在共用資料夾。",
-                moodDelta: 2,
-                goalDelta: 3,
-                feedback:
-                  "這會讓經驗變成可以傳承的資產，也訓練自己用結構化方式回顧整個專案。",
-              },
-              {
-                key: "B",
-                text: "各自在 Notion 或筆記本寫個人反思，不另外整理出共用文件。",
-                moodDelta: 2,
-                goalDelta: 1,
-                feedback:
-                  "對個人學習很有幫助，但團隊層次的資源比較無法延續。若時間有限，這也算是不錯的選擇。",
-              },
-              {
-                key: "C",
-                text: "覺得整理很花時間，反正之後也不一定會看到，就不特別做什麼。",
-                moodDelta: 0,
-                goalDelta: 0,
-                feedback:
-                  "少了一次把經驗沉澱下來的機會。對未來的自己來說，會變成「好像做過，但細節全忘了」。",
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
-    // 自動計算可達到的最大分數（用來算百分比）
-    const maxStageScore = (() => {
-      let maxMood = 0;
-      let maxGoal = 0;
-      stages.forEach((stage) => {
-        stage.interactions.forEach((inter) => {
-          const moodMax = Math.max(...inter.options.map((o) => o.moodDelta));
-          const goalMax = Math.max(...inter.options.map((o) => o.goalDelta));
-          maxMood += moodMax;
-          maxGoal += goalMax;
-        });
-      });
-      return { mood: maxMood, goal: maxGoal };
-    })();
-
-    let currentStageIndex = 0;
-    let currentInteractionIndex = 0;
-    let totalMood = 0;
-    let totalGoal = 0;
-    let history = []; // {stageName, interactionNo, title, choiceKey, choiceText}
-
-    const stageBar = document.getElementById("stageBar");
-    const scenarioContainer = document.getElementById("scenarioContainer");
-    const scoreMoodEl = document.getElementById("score-mood");
-    const scoreGoalEl = document.getElementById("score-goal");
-    const moodFill = document.getElementById("moodFill");
-    const goalFill = document.getElementById("goalFill");
-    const moodPercentEl = document.getElementById("moodPercent");
-    const goalPercentEl = document.getElementById("goalPercent");
-
-    const overlay = document.getElementById("overlay");
-    const feedbackTitleEl = document.getElementById("feedbackTitle");
-    const feedbackChipEl = document.getElementById("feedbackChip");
-    const feedbackBodyEl = document.getElementById("feedbackBody");
-    const feedbackNoteEl = document.getElementById("feedbackNote");
-    const btnCloseOverlay = document.getElementById("btnCloseOverlay");
-    const btnNextStage = document.getElementById("btnNextStage");
-
-    let bufferedNext = null;
-
-    // ----- Stage Bar -----
-    function renderStageBar() {
-      stageBar.innerHTML = "";
-      stages.forEach((stage, idx) => {
-        const item = document.createElement("div");
-        item.className = "stage-item";
-        if (idx < currentStageIndex) {
-          item.classList.add("done");
-        } else if (idx === currentStageIndex) {
-          item.classList.add("current");
-        }
-        const dot = document.createElement("div");
-        dot.className = "stage-dot";
-        const inner = document.createElement("div");
-        inner.className = "stage-dot-inner";
-        dot.appendChild(inner);
-
-        const label = document.createElement("div");
-        label.className = "stage-label";
-        label.textContent = `${stage.id}. ${stage.name}`;
-
-        item.appendChild(dot);
-        item.appendChild(label);
-        stageBar.appendChild(item);
-      });
-    }
-
-    // ----- 更新分數 -----
-    function updateScores() {
-      scoreMoodEl.textContent = totalMood;
-      scoreGoalEl.textContent = totalGoal;
-
-      const moodPercent = Math.max(
-        0,
-        Math.min(100, Math.round((totalMood / maxStageScore.mood) * 100))
-      );
-      const goalPercent = Math.max(
-        0,
-        Math.min(100, Math.round((totalGoal / maxStageScore.goal) * 100))
-      );
-
-      moodFill.style.width = moodPercent + "%";
-      goalFill.style.width = goalPercent + "%";
-      moodPercentEl.textContent = moodPercent + "%";
-      goalPercentEl.textContent = goalPercent + "%";
-    }
-
-    // ----- 渲染目前小關卡 -----
-    function renderCurrentInteraction() {
-      const stage = stages[currentStageIndex];
-      const inter = stage.interactions[currentInteractionIndex];
-
-      scenarioContainer.innerHTML = "";
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "scenario";
-
-      const header = document.createElement("div");
-      header.className = "scenario-header";
-
-      const leftHeader = document.createElement("div");
-      const tag = document.createElement("div");
-      tag.className = "scenario-stage-tag";
-      tag.textContent = stage.stageTag;
-      const title = document.createElement("h2");
-      title.className = "scenario-title";
-      title.textContent = `${stage.id}-${currentInteractionIndex + 1}. ${
-        inter.title
-      }`;
-      leftHeader.appendChild(tag);
-      leftHeader.appendChild(title);
-
-      const pill = document.createElement("div");
-      pill.className = "pill";
-      pill.textContent = `${stage.name} · 小關卡 ${
-        currentInteractionIndex + 1
-      } / ${stage.interactions.length}`;
-
-      header.appendChild(leftHeader);
-      header.appendChild(pill);
-
-      const body = document.createElement("div");
-      body.className = "scenario-body";
-      body.textContent = inter.scenario;
-
-      const hint = document.createElement("div");
-      hint.className = "hint";
-      hint.textContent = "老師提示｜" + inter.hint;
-
-      const optionsDiv = document.createElement("div");
-      optionsDiv.className = "options";
-
-      inter.options.forEach((opt) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.type = "button";
-
-        const keySpan = document.createElement("span");
-        keySpan.className = "option-key";
-        keySpan.textContent = opt.key;
-
-        const textSpan = document.createElement("span");
-        textSpan.className = "option-text";
-        textSpan.textContent = opt.text;
-
-        btn.appendChild(keySpan);
-        btn.appendChild(textSpan);
-
-        btn.addEventListener("click", () =>
-          handleChoice(currentStageIndex, currentInteractionIndex, opt)
-        );
-        optionsDiv.appendChild(btn);
-      });
-
-      const foot = document.createElement("div");
-      foot.className = "foot-row";
-      foot.innerHTML = `
-        <span>目前階段：${stage.name} · 小關卡 ${
-        currentInteractionIndex + 1
-      } / ${stage.interactions.length}</span>
-        <button class="btn-ghost" type="button" id="btnSkipExplain">
-          每一小關選完後會看到解析，請放心選直覺答案
-        </button>
-      `;
-
-      wrapper.appendChild(header);
-      wrapper.appendChild(body);
-      wrapper.appendChild(hint);
-      wrapper.appendChild(optionsDiv);
-      wrapper.appendChild(foot);
-      scenarioContainer.appendChild(wrapper);
-
-      const btnSkipExplain = document.getElementById("btnSkipExplain");
-      btnSkipExplain.addEventListener("click", () => {
-        alert("做出選擇後，會跳出解析視窗，說明這一小關的學習重點與你選項的效果。");
-      });
-
-      renderStageBar();
-    }
-
-    // ----- 選項處理 -----
-    function handleChoice(stageIndex, interactionIndex, opt) {
-      const stage = stages[stageIndex];
-      const inter = stage.interactions[interactionIndex];
-
-      totalMood += opt.moodDelta;
-      totalGoal += opt.goalDelta;
-      history.push({
-        stageName: stage.name,
-        interactionNo: interactionIndex + 1,
-        title: inter.title,
-        choiceKey: opt.key,
-        choiceText: opt.text,
-      });
-
-      updateScores();
-      showFeedback(stage, inter, opt);
-
-      const isLastInteractionInStage =
-        interactionIndex >= stage.interactions.length - 1;
-      const isLastStage = stageIndex >= stages.length - 1;
-
-      if (!isLastInteractionInStage) {
-        bufferedNext = goToNextInteraction;
-        btnNextStage.textContent = "同階段下一小關 ▶";
-      } else if (!isLastStage) {
-        bufferedNext = goToNextStage;
-        btnNextStage.textContent = "前往下一階段 ▶";
-      } else {
-        bufferedNext = showResult;
-        btnNextStage.textContent = "看結果總結 ▶";
-      }
-    }
-
-    // ----- 解析 overlay -----
-    function showFeedback(stage, inter, opt) {
-      overlay.classList.add("show");
-      feedbackTitleEl.textContent = `你在「${stage.name}－${
-        inter.title
-      }」選擇了選項 ${opt.key}`;
-      feedbackChipEl.textContent = stage.stageTag;
-      feedbackBodyEl.textContent = opt.feedback;
-      feedbackNoteEl.textContent =
-        "小提醒：這個遊戲沒有唯一正解，但不同做法會對團隊氣氛與目標達成造成不同影響。你也可以想想：在真實專案裡，你會改怎麼做？";
-    }
-
-    function hideOverlay() {
-      overlay.classList.remove("show");
-    }
-
-    btnCloseOverlay.addEventListener("click", () => {
-      hideOverlay();
+      optionsDiv.appendChild(btn);
     });
 
-    btnNextStage.addEventListener("click", () => {
-      hideOverlay();
-      if (typeof bufferedNext === "function") {
-        bufferedNext();
-      }
+    const foot = document.createElement("div");
+    foot.className = "foot-row";
+    foot.innerHTML = `
+      <span>目前階段：${stage.name} · 小關卡 ${
+      currentInteractionIndex + 1
+    } / ${stage.interactions.length}</span>
+      <button class="btn-ghost" type="button" id="btnSkipExplain">
+        每一小關選完後會看到解析，請放心選直覺答案
+      </button>
+    `;
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(body);
+    wrapper.appendChild(hint);
+    wrapper.appendChild(optionsDiv);
+    wrapper.appendChild(foot);
+    scenarioContainer.appendChild(wrapper);
+
+    const btnSkipExplain = document.getElementById("btnSkipExplain");
+    btnSkipExplain.addEventListener("click", () => {
+      alert("做出選擇後，會跳出解析視窗，說明這一小關的學習重點與你選項的效果。");
     });
 
-    // ----- 小關卡 / 階段切換 -----
-    function goToNextInteraction() {
-      const stage = stages[currentStageIndex];
-      if (currentInteractionIndex < stage.interactions.length - 1) {
-        currentInteractionIndex += 1;
-        renderCurrentInteraction();
-      }
+    renderStageBar();
+  }
+
+  // ----- 處理選擇（多傳入 letter） -----
+  function handleChoice(stageIndex, interactionIndex, opt, letter) {
+    const stage = stages[stageIndex];
+    const inter = stage.interactions[interactionIndex];
+
+    totalMood += opt.moodDelta;
+    totalGoal += opt.goalDelta;
+    history.push({
+      stageName: stage.name,
+      interactionNo: interactionIndex + 1,
+      title: inter.title,
+      choiceKey: letter,
+      choiceText: opt.text,
+    });
+
+    updateScores();
+    showFeedback(stage, inter, opt, letter);
+
+    const isLastInteractionInStage =
+      interactionIndex >= stage.interactions.length - 1;
+    const isLastStage = stageIndex >= stages.length - 1;
+
+    if (!isLastInteractionInStage) {
+      bufferedNext = goToNextInteraction;
+      btnNextStage.textContent = "同階段下一小關 ▶";
+    } else if (!isLastStage) {
+      bufferedNext = goToNextStage;
+      btnNextStage.textContent = "前往下一階段 ▶";
+    } else {
+      bufferedNext = showResult;
+      btnNextStage.textContent = "看結果總結 ▶";
     }
+  }
 
-    function goToNextStage() {
-      if (currentStageIndex < stages.length - 1) {
-        currentStageIndex += 1;
-        currentInteractionIndex = 0;
-        renderCurrentInteraction();
-      }
+  // ----- 題目解析 -----
+  function showFeedback(stage, inter, opt, letter) {
+    overlay.classList.add("show");
+    feedbackTitleEl.textContent = `你在「${stage.name}－${
+      inter.title
+    }」選擇了選項 ${letter}`;
+    feedbackChipEl.textContent = stage.stageTag;
+    feedbackBodyEl.textContent = opt.feedback;
+    feedbackNoteEl.textContent =
+      "小提醒：這個遊戲沒有唯一正解，但不同做法會對團隊氣氛與目標達成造成不同影響。你也可以想想：在真實專案裡，你會改怎麼做？";
+  }
+
+  function hideOverlay() {
+    overlay.classList.remove("show");
+  }
+
+  btnCloseOverlay.addEventListener("click", () => {
+    hideOverlay();
+  });
+
+  btnNextStage.addEventListener("click", () => {
+    hideOverlay();
+    if (typeof bufferedNext === "function") {
+      bufferedNext();
     }
+  });
 
-    // ----- 結果畫面 -----
-    function showResult() {
-      scenarioContainer.innerHTML = "";
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "scenario";
-
-      const title = document.createElement("h2");
-      title.className = "result-title";
-      title.textContent = "遊戲結束！來看看你的團隊風格";
-
-      const moodPercent = Math.round(
-        (totalMood / maxStageScore.mood) * 100
-      );
-      const goalPercent = Math.round(
-        (totalGoal / maxStageScore.goal) * 100
-      );
-
-      let styleText = "";
-      if (moodPercent >= 70 && goalPercent >= 70) {
-        styleText =
-          "你偏向「高氣氛、高績效」的團隊風格，重視關係，也願意好好面對衝突與規劃。";
-      } else if (moodPercent >= 70 && goalPercent < 70) {
-        styleText =
-          "你偏向「氣氛好，但目標較鬆散」的團隊風格，適合再多一點目標與規劃思維。";
-      } else if (moodPercent < 70 && goalPercent >= 70) {
-        styleText =
-          "你偏向「績效導向，但比較辛苦」的團隊風格，建議為關係與照顧彼此多留一點空間。";
-      } else {
-        styleText =
-          "你這次的選擇比較分散，既沒有太強的氣氛，也沒有很高的目標達成，適合再多思考自己的帶隊習慣。";
-      }
-
-      const highlight = document.createElement("div");
-      highlight.className = "result-highlight";
-      highlight.textContent = styleText;
-
-      const grid = document.createElement("div");
-      grid.className = "result-grid";
-
-      const box1 = document.createElement("div");
-      box1.className = "result-box";
-      box1.innerHTML = `
-        <h3>總體表現</h3>
-        <div class="result-badge-row">
-          <span class="result-badge">團隊氣氛值：${totalMood}（約 ${moodPercent}%）</span>
-          <span class="result-badge">目標達成度：${totalGoal}（約 ${goalPercent}%）</span>
-        </div>
-        <p class="result-text">
-          在真實專案中，沒有「只看分數」這件事，但這兩個指標提醒我們：<br/>
-          · 只看氣氛：容易變成「大家很好玩，但事情做不完」。<br/>
-          · 只看成果：容易變成「任務完成了，但沒有人想再一起合作」。<br/>
-          最理想的狀態，是在限制條件內找到兩者的平衡。
-        </p>
-      `;
-
-      const box2 = document.createElement("div");
-      box2.className = "result-box";
-      box2.innerHTML = `
-        <h3>五個階段的小抄</h3>
-        <p class="result-text">
-          · 組建期：讓大家覺得安全、被看見，並釐清目標與基本規則。<br/>
-          · 風暴期：不要迴避衝突，學會「處理問題，而不是處理人」。<br/>
-          · 正軌期：一起訂出看得見的運作規範，並隨著經驗調整。<br/>
-          · 風采期：高效不代表亂加 Scope，要有意識地評估負荷與風險。<br/>
-          · 解散期：好好收尾，把經驗沉澱成學習，也留下好的關係與知識資產。
-        </p>
-      `;
-
-      grid.appendChild(box1);
-      grid.appendChild(box2);
-
-      const historyBox = document.createElement("div");
-      historyBox.className = "result-box mt-2";
-      const hisTitle = document.createElement("h3");
-      hisTitle.textContent = "你剛剛的選擇路徑";
-      const hisText = document.createElement("p");
-      hisText.className = "result-text";
-      hisText.textContent = "可以把這張列表當成自我反思的起點：";
-
-      const ul = document.createElement("ol");
-      ul.className = "history-list";
-      history.forEach((h) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <span>${h.stageName}</span>（小關卡 ${h.interactionNo}）：在「${
-          h.title
-        }」中，你選擇了「${h.choiceKey} 選項」，<br/>
-          ${h.choiceText}
-        `;
-        ul.appendChild(li);
-      });
-
-      historyBox.appendChild(hisTitle);
-      historyBox.appendChild(hisText);
-      historyBox.appendChild(ul);
-
-      const bottomRow = document.createElement("div");
-      bottomRow.className = "foot-row mt-3";
-      bottomRow.innerHTML = `
-        <span>老師用途建議：可請學生截圖這個畫面，搭配一小段文字反思自己的帶隊風格。</span>
-        <div>
-          <button class="btn-small" type="button" id="btnPlayAgain">重新體驗一次</button>
-        </div>
-      `;
-
-      wrapper.appendChild(title);
-      wrapper.appendChild(highlight);
-      wrapper.appendChild(grid);
-      wrapper.appendChild(historyBox);
-      wrapper.appendChild(bottomRow);
-      scenarioContainer.appendChild(wrapper);
-
-      const btnPlayAgain = document.getElementById("btnPlayAgain");
-      btnPlayAgain.addEventListener("click", resetGame);
+  // ----- 切換小關 / 階段 -----
+  function goToNextInteraction() {
+    const stage = stages[currentStageIndex];
+    if (currentInteractionIndex < stage.interactions.length - 1) {
+      currentInteractionIndex += 1;
+      renderCurrentInteraction();
     }
+  }
 
-    // ----- 重設遊戲 -----
-    function resetGame() {
-      currentStageIndex = 0;
+  function goToNextStage() {
+    if (currentStageIndex < stages.length - 1) {
+      currentStageIndex += 1;
       currentInteractionIndex = 0;
-      totalMood = 0;
-      totalGoal = 0;
-      history = [];
-      updateScores();
       renderCurrentInteraction();
     }
+  }
 
-    // ----- 初始化 -----
-    function init() {
-      updateScores();
-      renderStageBar();
-      renderCurrentInteraction();
+  // ----- 結果畫面 -----
+  function showResult() {
+    scenarioContainer.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "scenario";
+
+    const title = document.createElement("h2");
+    title.className = "result-title";
+    title.textContent = "遊戲結束！來看看你的團隊風格";
+
+    const moodPercent = Math.round((totalMood / maxStageScore.mood) * 100);
+    const goalPercent = Math.round((totalGoal / maxStageScore.goal) * 100);
+
+    let styleText = "";
+    if (moodPercent >= 70 && goalPercent >= 70) {
+      styleText =
+        "你偏向「高氣氛、高績效」的團隊風格，重視關係，也願意好好面對衝突與規劃。";
+    } else if (moodPercent >= 70 && goalPercent < 70) {
+      styleText =
+        "你偏向「氣氛好，但目標較鬆散」的團隊風格，適合再多一點目標與規劃思維。";
+    } else if (moodPercent < 70 && goalPercent >= 70) {
+      styleText =
+        "你偏向「績效導向，但比較辛苦」的團隊風格，建議為關係與照顧彼此多留一點空間。";
+    } else {
+      styleText =
+        "你這次的選擇比較分散，既沒有太強的氣氛，也沒有很高的目標達成，適合再多思考自己的帶隊習慣。";
     }
 
-    init();
-  </script>
-</body>
-</html>
+    const highlight = document.createElement("div");
+    highlight.className = "result-highlight";
+    highlight.textContent = styleText;
+
+    const grid = document.createElement("div");
+    grid.className = "result-grid";
+
+    const box1 = document.createElement("div");
+    box1.className = "result-box";
+    box1.innerHTML = `
+      <h3>總體表現</h3>
+      <div class="result-badge-row">
+        <span class="result-badge">團隊氣氛值：${totalMood}（約 ${moodPercent}%）</span>
+        <span class="result-badge">目標達成度：${totalGoal}（約 ${goalPercent}%）</span>
+      </div>
+      <p class="result-text">
+        在真實專案中，沒有「只看分數」這件事，但這兩個指標提醒我們：<br/>
+        · 只看氣氛：容易變成「大家很好玩，但事情做不完」。<br/>
+        · 只看成果：容易變成「任務完成了，但沒有人想再一起合作」。<br/>
+        最理想的狀態，是在限制條件內找到兩者的平衡。
+      </p>
+    `;
+
+    const box2 = document.createElement("div");
+    box2.className = "result-box";
+    box2.innerHTML = `
+      <h3>五個階段的小抄</h3>
+      <p class="result-text">
+        · 組建期：讓大家覺得安全、被看見，並釐清目標與基本規則。<br/>
+        · 風暴期：不要迴避衝突，學會「處理問題，而不是處理人」。<br/>
+        · 正軌期：一起訂出看得見的運作規範，並隨著經驗調整。<br/>
+        · 風采期：高效不代表亂加 Scope，要有意識地評估負荷與風險。<br/>
+        · 解散期：好好收尾，把經驗沉澱成學習，也留下好的關係與知識資產。
+      </p>
+    `;
+
+    grid.appendChild(box1);
+    grid.appendChild(box2);
+
+    const historyBox = document.createElement("div");
+    historyBox.className = "result-box mt-2";
+    const hisTitle = document.createElement("h3");
+    hisTitle.textContent = "你剛剛的選擇路徑";
+    const hisText = document.createElement("p");
+    hisText.className = "result-text";
+    hisText.textContent = "可以把這張列表當成自我反思的起點：";
+
+    const ul = document.createElement("ol");
+    ul.className = "history-list";
+    history.forEach((h) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${h.stageName}</span>（小關卡 ${h.interactionNo}）：在「${
+        h.title
+      }」中，你選擇了「${h.choiceKey} 選項」，<br/>
+        ${h.choiceText}
+      `;
+      ul.appendChild(li);
+    });
+
+    historyBox.appendChild(hisTitle);
+    historyBox.appendChild(hisText);
+    historyBox.appendChild(ul);
+
+    const bottomRow = document.createElement("div");
+    bottomRow.className = "foot-row mt-3";
+    bottomRow.innerHTML = `
+      <span>老師用途建議：可請學生截圖這個畫面，搭配一小段文字反思自己的帶隊風格。</span>
+      <div>
+        <button class="btn-small" type="button" id="btnPlayAgain">重新體驗一次</button>
+      </div>
+    `;
+
+    wrapper.appendChild(title);
+    wrapper.appendChild(highlight);
+    wrapper.appendChild(grid);
+    wrapper.appendChild(historyBox);
+    wrapper.appendChild(bottomRow);
+    scenarioContainer.appendChild(wrapper);
+
+    const btnPlayAgain = document.getElementById("btnPlayAgain");
+    btnPlayAgain.addEventListener("click", resetGame);
+  }
+
+  // ----- 重設 -----
+  function resetGame() {
+    currentStageIndex = 0;
+    currentInteractionIndex = 0;
+    totalMood = 0;
+    totalGoal = 0;
+    history = [];
+    updateScores();
+    renderCurrentInteraction();
+  }
+
+  // ----- 初始化 -----
+  function init() {
+    updateScores();
+    renderStageBar();
+    renderCurrentInteraction();
+  }
+
+  init();
+</script>
